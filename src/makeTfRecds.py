@@ -10,14 +10,17 @@ file='train'
 clsName={0:'cat',1:'dog'}
 
 tainIdx = open(os.path.join(mdir, file+'.txt'),'r')
-writer=[]
-map={}
-for i,cls in enumerate(clsName):
-    map[cls]=i
-    writer.append(tf.python_io.TFRecordWriter(os.path.join(mdir, file+'.'+clsName[cls]+'.tfrecords')))
-lines = tainIdx.readlines()
+# writer=[]
+# map={}
+# for i,cls in enumerate(clsName):
+#     map[cls]=i
+#     writer.append(tf.python_io.TFRecordWriter(os.path.join(mdir, file+'.'+clsName[cls]+'.tfrecords')))
+# lines = tainIdx.readlines()
 
 i=0
+j=0
+lines = tainIdx.readlines()
+writer=None
 # print("presseed: ",end='')
 for line in lines:
     if(len(line)<2):
@@ -33,11 +36,17 @@ for line in lines:
         "label": tf.train.Feature(int64_list=tf.train.Int64List(value=[int(cls)])),
         'img_raw': tf.train.Feature(bytes_list=tf.train.BytesList(value=[img_raw]))
     }))
-    writer[map[int(cls)]].write(example.SerializeToString())
+
+    if i%1000==0:
+        if(writer!=None):
+            writer.close()
+        writer=tf.python_io.TFRecordWriter(os.path.join(mdir, file+'.'+clsName[cls]+str(j)+'.tfrecords'))
+        j += 1
+
+    writer.write(example.SerializeToString())
+
     if i%100==0:
         print("have presseed {0} pics".format(i))
     i=i+1
-
-for i,_ in enumerate(clsName):
-    writer[i].close()
+writer.close()
 tainIdx.close()
