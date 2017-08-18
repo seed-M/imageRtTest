@@ -2,26 +2,32 @@ import os
 import tensorflow as tf
 from PIL import Image
 
-mdir = 'D:/tmp/Images/CatVsDog'
+mdir = '/home/wm/tmp/data'
 # train.txt
 # val.txt
 # test.txt
 file='train'
 clsName={0:'cat',1:'dog'}
 
-tainIdx = open(os.path.join(mdir, file+'.txt'),'r')
-# writer=[]
-# map={}
-# for i,cls in enumerate(clsName):
-#     map[cls]=i
-#     writer.append(tf.python_io.TFRecordWriter(os.path.join(mdir, file+'.'+clsName[cls]+'.tfrecords')))
+map={}
+for i,cls in enumerate(clsName):
+    map[cls]=i
+
+tainIdx = open(os.path.join(mdir, file+'.idx'),'r')
+lines = tainIdx.readlines()
+
+
+writer=[None]*len(clsName)
+iterNum=[0]*len(clsName)
+fileNum=[0]*len(clsName)
+
+# j=0
+# l=0
 # lines = tainIdx.readlines()
+# writer=None
+# print("presseed: ",end='')
 
 i=0
-j=0
-lines = tainIdx.readlines()
-writer=None
-# print("presseed: ",end='')
 for line in lines:
     if(len(line)<2):
         print('end')
@@ -37,16 +43,18 @@ for line in lines:
         'img_raw': tf.train.Feature(bytes_list=tf.train.BytesList(value=[img_raw]))
     }))
 
-    if i%1000==0:
-        if(writer!=None):
-            writer.close()
-        writer=tf.python_io.TFRecordWriter(os.path.join(mdir, file+'.'+clsName[cls]+str(j)+'.tfrecords'))
-        j += 1
+    if iterNum[map[int(cls)]]%1000==0:
+        if (writer[map[int(cls)]] != None):
+            writer[map[int(cls)]].close()
+        writer[map[int(cls)]]=tf.python_io.TFRecordWriter(os.path.join(mdir, file+'.'+clsName[int(cls)]+str(fileNum[map[int(cls)]])+'.tfrecords'))
+        fileNum[map[int(cls)]]+=1
 
-    writer.write(example.SerializeToString())
-
+    writer[map[int(cls)]].write(example.SerializeToString())
+    iterNum[map[int(cls)]]+=1
     if i%100==0:
         print("have presseed {0} pics".format(i))
     i=i+1
-writer.close()
+
+for w in writer:
+    w.close()
 tainIdx.close()
