@@ -1,11 +1,19 @@
 import os
 import tensorflow as tf
 
-mdir = 'D:/tmp/Images/CatVsDog'
+mdir = '/home/wm/tmp/data'
 # train.txt
 # val.txt
 # test.txt
 file='train'
+fnames=['train.cat0.tfrecords','train.cat1.tfrecords','train.cat2.tfrecords','train.cat3.tfrecords', \
+        'train.cat4.tfrecords','train.cat5.tfrecords','train.cat6.tfrecords','train.cat7.tfrecords', \
+        'train.cat8.tfrecords',\
+        'train.dog0.tfrecords','train.dog1.tfrecords','train.dog2.tfrecords','train.dog3.tfrecords', \
+        'train.dog4.tfrecords', 'train.dog5.tfrecords', 'train.dog6.tfrecords','train.dog7.tfrecords', \
+        'train.dog8.tfrecords']
+
+
 
 def read_and_decode(filename):
     #根据文件名生成一个队列
@@ -25,12 +33,12 @@ def read_and_decode(filename):
 
     return img, label
 
-img, label = read_and_decode([os.path.join(mdir,file+'.cat.tfrecords'),os.path.join(mdir,file+'.dog.tfrecords')])
+img, label = read_and_decode([os.path.join(mdir,name) for name in fnames])
 
 #使用shuffle_batch可以随机打乱输入
 img_batch, label_batch = tf.train.shuffle_batch([img, label],num_threads=2,
                                                 batch_size=200, capacity=5000,
-                                                min_after_dequeue=4000)
+                                                min_after_dequeue=3000)
 init = tf.initialize_all_variables()
 
 with tf.Session() as sess:
