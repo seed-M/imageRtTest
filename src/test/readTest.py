@@ -1,7 +1,7 @@
 import os
 import tensorflow as tf
 
-mdir = '/home/wm/tmp/data'
+mdir = '/home/wm/tmp/data/dogvscat'
 # train.txt
 # val.txt
 # test.txt
@@ -37,7 +37,7 @@ img, label = read_and_decode([os.path.join(mdir,name) for name in fnames])
 
 #使用shuffle_batch可以随机打乱输入
 img_batch, label_batch = tf.train.shuffle_batch([img, label],num_threads=2,
-                                                batch_size=200, capacity=5000,
+                                                batch_size=200, capacity=3600,
                                                 min_after_dequeue=3000)
 init = tf.initialize_all_variables()
 

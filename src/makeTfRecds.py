@@ -2,7 +2,7 @@ import os
 import tensorflow as tf
 from PIL import Image
 
-mdir = '/home/wm/tmp/data'
+mdir = '/home/wm/tmp/data/dogvscat'
 # train.txt
 # val.txt
 # test.txt

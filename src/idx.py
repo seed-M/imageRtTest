@@ -2,7 +2,7 @@
 import os
 import random
 
-rootdir='/home/wm/tmp/data'
+rootdir='/home/wm/tmp/data/dogvscat'
 imagedir='train/'
 
 ftrain=open(os.path.join(rootdir,'train.idx'),'w')
