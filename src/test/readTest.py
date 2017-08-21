@@ -1,7 +1,7 @@
 import os
 import tensorflow as tf
 
-mdir = '/home/wm/tmp/data/dogvscat'
+mdir = 'D:/tmp/Images/CatVsDog'
 # train.txt
 # val.txt
 # test.txt

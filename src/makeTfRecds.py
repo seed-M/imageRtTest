@@ -2,11 +2,11 @@ import os
 import tensorflow as tf
 from PIL import Image
 
-mdir = '/home/wm/tmp/data/dogvscat'
-# train.txt
-# val.txt
-# test.txt
-file='train'
+mdir = 'D:/tmp/Images/CatVsDog'
+# train.idx
+# val.idx
+# test.idx
+file='val'
 clsName={0:'cat',1:'dog'}
 
 map={}
