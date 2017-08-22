@@ -25,6 +25,6 @@ def getInputs(filepathList, batch_size, num_epochs,shape):
         image, label = read_and_decode(filename_queue,shape=shape)
         min_after_dequeue=3000
         capacity=min_after_dequeue+3*batch_size
-        img_batch, label_batch = tf.train.shuffle_batch([image,label],batch_size=batch_size,num_threads=2,\
+        img_batch, label_batch = tf.train.shuffle_batch([image,label],batch_size=batch_size,num_threads=2,
                 capacity=capacity,min_after_dequeue=min_after_dequeue)
         return img_batch,label_batch

@@ -64,7 +64,8 @@ try:
         vl=sess.run(ls_op)
         print('step={0}'.format(step),end=' ')
         print(vt,end=',')
-        print(vl)
+        print(vl,end=',')
+        print(vl.shape)
         step += 1
 except tf.errors.OutOfRangeError:
     print('Done training for %d epochs, %d steps.' % (num_epochs, step))

@@ -2,6 +2,7 @@ import tensorflow as tf
 import time
 import argparse
 import sys
+from datetime import datetime
 from model import FinetuneModel as fm
 from dataGenerator import getInputs
 
@@ -16,7 +17,7 @@ def run_training(tf_list,skip_layer):
         score,_=fmodel.inference()
         loss=fmodel.loss(labels=labels)
         tf.summary.scalar('loss', loss)
-        train_op=fmodel.training(learning_rate=FLAGS.learing_rate)
+        train_op=fmodel.training(learning_rate=FLAGS.learning_rate)
         accuracy=fmodel.accuracy(labels=labels)
         tf.summary.scalar('acc',accuracy)
         merged_summary = tf.summary.merge_all()
@@ -34,9 +35,10 @@ def run_training(tf_list,skip_layer):
         try:
             while not coord.should_stop():
                 start_time = time.time()
-                if step%50==0:
+                if step%20==0:
                     s,_=sess.run([merged_summary,train_op])
                     writer.add_summary(s, step)
+                    print("{} batch number: {}".format(datetime.now(), step))
                 else:
                     sess.run(train_op)
                 step+=1
@@ -45,7 +47,9 @@ def run_training(tf_list,skip_layer):
         finally:
             # When done, ask the threads to stop.
             coord.request_stop()
-
+            # Wait for threads to finish.
+        coord.join(threads)
+        sess.close()
 
 def main(_):
     skip_layer=['fc8','laten','fc7']
@@ -55,16 +59,32 @@ def main(_):
         tf_list=[]
         for line in lines:
             tf_list.append(line.strip())
-        run_training(tfrecords_idx,skip_layer)
+        run_training(tf_list,skip_layer)
 
     except IOError as err:
         print("FileError:"+str(err))
 
 
-    run_training()
-
 if __name__ == '__main__':
   parser = argparse.ArgumentParser()
+  parser.add_argument(
+      'num_classes',
+      type=int,
+      default=2,
+      help='Number of classes.'
+  )
+  parser.add_argument(
+      'tfrecords_idx',
+      type=str,
+      default='/tmp/data/tf.idx',
+      help='Directory with the tfrecords file index.'
+  )
+  parser.add_argument(
+      'weights_path',
+      type=str,
+      default='/tmp/data/bvlc_alexnet.npy',
+      help='caffe bvlc_alexnet.npy path'
+  )
   parser.add_argument(
       '--learning_rate',
       type=float,
@@ -74,7 +94,7 @@ if __name__ == '__main__':
   parser.add_argument(
       '--num_epochs',
       type=int,
-      default=2,
+      default=10,
       help='Number of epochs to run trainer.'
   )
   parser.add_argument(
@@ -83,29 +103,12 @@ if __name__ == '__main__':
       default=0.5,
       help='Number of dropout rate.'
   )
-  parser.add_argument(
-      '--num_classes',
-      type=int,
-      default=2,
-      help='Number of classes.'
-  )
+
   parser.add_argument(
       '--batch_size',
       type=int,
       default=100,
       help='Batch size.'
-  )
-  parser.add_argument(
-      '--tfrecords_idx',
-      type=str,
-      default='/tmp/data/tf.idx',
-      help='Directory with the tfrecords file index.'
-  )
-  parser.add_argument(
-      '--weights_path',
-      type=str,
-      default='/tmp/data/bvlc_alexnet.npy',
-      help='caffe bvlc_alexnet.npy path'
   )
   parser.add_argument(
       '--filewriter_path',

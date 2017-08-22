@@ -17,13 +17,13 @@ class FinetuneModel(object):
 
 
     def inference(self):
-        self.net=AlexNet(self.X,keep_prob=self.KEEP_PROB,num_classes=self.NUM_CLASSES,skip_layer=self.SKIP_LAYER)
+        self.net=AlexNet(self.X,keep_prob=self.KEEP_PROB,num_classes=self.NUM_CLASSES,skip_layer=self.SKIP_LAYER,weights_path=self.WEIGHTS_PATH)
         self.score=self.net.fc8
         self.bucket=self.net.laten
         return self.score, self.bucket
 
     def loss(self,labels):
-        cross_entropy=tf.nn.softmax_cross_entropy_with_logits(logits=self.score,labels=labels)
+        cross_entropy=tf.nn.sparse_softmax_cross_entropy_with_logits(logits=self.score,labels=labels)
         self.loss=tf.reduce_mean(cross_entropy)
         return self.loss
 
@@ -40,7 +40,7 @@ class FinetuneModel(object):
         return train_op
 
     def accuracy(self,labels):
-        correct_pred = tf.equal(tf.argmax(self.score, 1), tf.argmax(labels, 1))
+        correct_pred = tf.nn.in_top_k(self.score,labels,1)
         return tf.reduce_mean(tf.cast(correct_pred, tf.float32))
 
     def load_initial_weights(self,sess):
