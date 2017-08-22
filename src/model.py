@@ -28,7 +28,6 @@ class FinetuneModel(object):
         return self.loss
 
     def training(self,learning_rate):
-        tf.summary.scalar('loss', self.loss)
         global_step = tf.Variable(0, name='global_step', trainable=False)
         optimizer = tf.train.GradientDescentOptimizer(learning_rate)
         if self.SKIP_LAYER!=None:
