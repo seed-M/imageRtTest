@@ -88,12 +88,11 @@ class AlexNet(object):
 
         # Laten Layer: FC and -> sigimod
 
-        laten=fc(dropout7,4096,48,relu=False,name='laten')
-        latensgm=mysigmoid(laten)
-        self.laten=latensgm
+        laten=latenlayer(dropout7,4096,48,name='laten',sigmoid=True)
+        self.laten=laten
 
         # 8th Layer: FC and return unscaled activations
-        self.fc8 = fc(latensgm, 48, self.NUM_CLASSES, relu=False, name='fc8')
+        self.fc8 = fc(laten, 48, self.NUM_CLASSES, relu=False, name='fc8')
 
     def load_initial_weights(self, session):
         """Load weights from file into network.
@@ -173,6 +172,20 @@ def conv(x, filter_height, filter_width, num_filters, stride_y, stride_x, name,
     return relu
 
 
+def latenlayer(x,num_in,num_out,name,sigmoid=True):
+    with tf.variable_scope(name) as scope:
+        weights = tf.get_variable('weights', shape=[num_in, num_out],
+                                  trainable=True)
+        biases = tf.get_variable('biases', [num_out], trainable=True)
+
+        # Matrix multiply weights and inputs and add bias
+        act = tf.nn.xw_plus_b(x, weights, biases, name=scope.name)
+
+        if sigmoid:
+            return tf.nn.sigmoid(act)
+        else:
+            return act
+
 def fc(x, num_in, num_out, name, relu=True):
     """Create a fully connected layer."""
     with tf.variable_scope(name) as scope:
@@ -211,6 +224,3 @@ def lrn(x, radius, alpha, beta, name, bias=1.0):
 def dropout(x, keep_prob):
     """Create a dropout layer."""
     return tf.nn.dropout(x, keep_prob)
-
-def mysigmoid(x):
-    return tf.nn.sigmoid(x)

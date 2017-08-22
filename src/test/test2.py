@@ -1,7 +1,7 @@
 import tensorflow as tf
 
 
-a=list(range(103))
+a=list(range(1031))
 writer= tf.python_io.TFRecordWriter('test.tfrecords')
 for i in a:
 

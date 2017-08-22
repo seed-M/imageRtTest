@@ -23,8 +23,8 @@ class FinetuneModel(object):
         return self.score, self.bucket
 
     def loss(self,labels):
-        cross_entropy=tf.nn.sparse_softmax_cross_entropy_with_logits(logits=self.score,labels=labels)
-        self.loss=tf.reduce_mean(cross_entropy)
+        cross_entropy=tf.nn.sparse_softmax_cross_entropy_with_logits(logits=self.score,labels=labels,name='xentropy')
+        self.loss=tf.reduce_mean(cross_entropy,name='xentropy')
         return self.loss
 
     def training(self,learning_rate):

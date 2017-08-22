@@ -15,7 +15,7 @@ for parent,_,filenames in os.walk(rootdir):
             continue
 
         rnd=random.uniform(0,1)
-        fp=ftrain;
+        fp=ftrain
         if rnd<0.3:
             if random.randint(0,1)==0:
                 fp=fval
