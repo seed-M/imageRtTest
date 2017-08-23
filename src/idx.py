@@ -2,8 +2,8 @@
 import os
 import random
 
-rootdir='D:/tmp/Images/CatVsDog'
-imagedir='train/'
+rootdir='E:/data/DogvsCat'
+# imagedir='train/'
 
 ftrain=open(os.path.join(rootdir,'train.idx'),'w')
 fval=open(os.path.join(rootdir,'val.idx'),'w')

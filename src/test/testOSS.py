@@ -38,11 +38,15 @@ def tp(x):
 
 def tflist(path):
     tf_list=[]
-    for parent, _, filenames in os.walk(path):
-        for name in filenames:
-            if os.path.splitext(name)[1] != '.tfrecords':
-                continue
-            tf_list.append(os.path.join(parent,name))
+    files = tf.gfile.Glob(os.path.join(FLAGS.buckets, '*.tfrecords'))
+    for path in files:
+        tf_list.append(path)
+
+    # for parent, _, filenames in os.walk(path):
+    #     for name in filenames:
+    #         if os.path.splitext(name)[1] != '.tfrecords':
+    #             continue
+    #         tf_list.append(os.path.join(parent,name))
 
     return tf_list
 
@@ -99,6 +103,11 @@ if __name__ == '__main__':
         'fw_path',
         type=str,
         help='tensorboard file dir'
+    )
+    parser.add_argument(
+        'buckets',
+        type=str,
+        help='train file dir'
     )
     parser.add_argument(
         '--batch_size',

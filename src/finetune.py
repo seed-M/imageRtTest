@@ -25,6 +25,10 @@ def run_training(tf_list,skip_layer):
         init_op=tf.group(tf.global_variables_initializer(),tf.local_variables_initializer())
 
         writer = tf.summary.FileWriter(FLAGS.fw_path)
+
+        # Initialize an saver for store model checkpoints
+        saver = tf.train.Saver()
+
         sess=tf.Session()
         sess.run(init_op)
         fmodel.load_initial_weights(sess=sess)
@@ -43,6 +47,9 @@ def run_training(tf_list,skip_layer):
                 else:
                     sess.run(train_op)
                 step+=1
+                if step%175==0:
+                    checkpoint_name=os.path.join(FLAGS.ckpt_path,'model.ckpt')
+                    saver.save(sess=sess,save_path=checkpoint_name)
         except tf.errors.OutOfRangeError:
             print('Done training for %d epochs, %d steps.' % (FLAGS.num_epochs, step))
         finally:
@@ -65,9 +72,9 @@ def tflist(path):
     return tf_list
 
 def main(_):
-    skip_layer=['fc8','laten','fc7','fc6']
+    train_layer=['fc8','laten','fc7']
     tf_list=tflist(FLAGS.tf_path)
-    run_training(tf_list, skip_layer)
+    run_training(tf_list, train_layer)
     # try:
     #     tfrecords_idx=open(FLAGS.tfrecords_idx,'r')
     #     lines=tfrecords_idx.readlines()
@@ -126,10 +133,14 @@ if __name__ == '__main__':
       help='Batch size.'
   )
   parser.add_argument(
-      '--fw_path',
+      'fw_path',
       type=str,
-      default='/tmp/data/tensorboard',
       help='path to tensorboard savedir'
+  )
+  parser.add_argument(
+      'ckpt_path',
+      type=str,
+      help='path to chekpoint savedir'
   )
   FLAGS, unparsed = parser.parse_known_args()
   tf.app.run(main=main, argv=[sys.argv[0]] + unparsed)
